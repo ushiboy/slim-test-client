@@ -1,0 +1,24 @@
+{
+  "name": "slimtestclient/slimtestclient",
+  "scripts": {
+    "phpcs": "phpcs --standard=PSR2 src",
+    "test": "phpunit",
+    "phpunit": "phpunit"
+  },
+  "autoload": {
+    "psr-4": {
+      "SlimTest\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SlimTest\\Test\\": "test/"
+    }
+  },
+  "require": {},
+  "require-dev": {
+    "slim/slim": "^3.8",
+    "phpunit/phpunit": "^6.2",
+    "squizlabs/php_codesniffer": "^3.0"
+  }
+}

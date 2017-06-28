@@ -1,9 +1,16 @@
 {
   "name": "slimtestclient/slimtestclient",
+  "type": "library",
+  "description": "Test client for Slim application.",
+  "keywords": ["slim","test"],
+  "license": "MIT",
   "scripts": {
-    "phpcs": "phpcs --standard=PSR2 src",
-    "test": "phpunit",
-    "phpunit": "phpunit"
+    "test": [
+      "@phpunit",
+      "@phpcs"
+    ],
+    "phpunit": "phpunit",
+    "phpcs": "phpcs --standard=PSR2 src"
   },
   "autoload": {
     "psr-4": {

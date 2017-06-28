@@ -8,16 +8,6 @@ use SlimTest\Client;
 class ClientTest extends TestCase
 {
 
-    /**
-     * TODO 確認事項
-     *
-     * Request Body     v
-     * QueryString      v
-     * Cookie           v
-     * Custom Header    v
-     * File Upload
-     */
-
     public function testRequest()
     {
         $status = 201;
@@ -113,10 +103,65 @@ class ClientTest extends TestCase
             'uploadfile' => [
                 'name' => 'test.txt',
                 'tmp_name' => $path,
-                'size' => strlen($content)
+                'size' => strlen($content),
+                'error' => UPLOAD_ERR_OK,
+                'type' => 'text/plain'
             ]
         ]);
         $this->assertEquals($content, $result);
+    }
+
+    public function testRequestWithMultiFile()
+    {
+        $app = new App();
+        $result = null;
+        $app->post('/todos', function($req, $res) use (&$result) {
+            $files = $req->getUploadedFiles();
+            $result = [
+                $files['uploadfile'][0]->getStream()->getContents(),
+                $files['uploadfile'][1]->getStream()->getContents()
+            ];
+            return $res;
+        });
+
+        $content1 = 'test1';
+        $f1 = tmpfile();
+        $path1 = stream_get_meta_data($f1)['uri'];
+        fwrite($f1, $content1);
+
+        $content2 = 'test2';
+        $f2 = tmpfile();
+        $path2 = stream_get_meta_data($f2)['uri'];
+        fwrite($f2, $content2);
+
+        $client = new Client($app);
+        $response = $client->request('POST', '/todos', null, [
+            'Content-Type' => 'multipart/form-data'
+        ], [
+            'uploadfile' => [
+                'name' => [
+                    'test1.txt',
+                    'test2.txt'
+                ],
+                'tmp_name' => [
+                    $path1,
+                    $path2
+                ],
+                'size' => [
+                    strlen($content1),
+                    strlen($content2)
+                ],
+                'error' => [
+                    UPLOAD_ERR_OK,
+                    UPLOAD_ERR_OK
+                ],
+                'type' => [
+                    'text/plain',
+                    'text/plain'
+                ]
+            ]
+        ]);
+        $this->assertEquals([$content1, $content2], $result);
     }
 
     public function testRequestJson()
@@ -132,5 +177,25 @@ class ClientTest extends TestCase
         $response = $client->requestJson('POST', '/todos', ['title'=>'にほんご']);
         $this->assertEquals(['title' => 'にほんご'], $result);
     }
+
+    public function testRequestJsonWithHeader()
+    {
+        $app = new App();
+        $result = null;
+        $app->post('/todos', function($req, $res) use (&$result) {
+            $result = [
+                $req->getHeaderLine('X-My-Custom'),
+                $req->getParsedBody()
+            ];
+            return $res;
+        });
+
+        $client = new Client($app);
+        $response = $client->requestJson('POST', '/todos', ['id'=>1234], [
+            'X-My-Custom' => 'test'
+        ]);
+        $this->assertEquals(['test', ['id' => 1234]], $result);
+    }
+
 
 }

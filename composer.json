@@ -10,7 +10,8 @@
       "@phpcs"
     ],
     "phpunit": "phpunit",
-    "phpcs": "phpcs --standard=PSR2 src"
+    "phpcs": "phpcs --standard=PSR2 src",
+    "example": "phpunit example/index.php"
   },
   "autoload": {
     "psr-4": {

@@ -3,6 +3,7 @@
   "type": "library",
   "description": "Test client for Slim application.",
   "keywords": ["slim","test"],
+  "homepage": "https://github.com/ushiboy/slim-test-client",
   "license": "MIT",
   "scripts": {
     "test": [

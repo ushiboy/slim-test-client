@@ -74,6 +74,8 @@ class Client
      * @param array $body       Request Body
      * @param array $headers    Request Header
      * @param array $files      Upload File Data
+     *
+     * @return \SlimTest\ExtraResponse
      */
     public function request(
         $method,
@@ -119,6 +121,8 @@ class Client
      * @param string $url       URL
      * @param array $body       Request Body
      * @param array $headers    Request Header
+     *
+     * @return \SlimTest\ExtraResponse
      */
     public function requestJson($method, $uri, $body = null, $headers = [])
     {

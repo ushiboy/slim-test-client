@@ -7,7 +7,7 @@ Unofficial test client for Slim Framework.
 ### Basic usage
 
 
-To get started, you first instantiate and configure the Slim application and it passing to instantiate SlimTest client.
+To get started, you first instantiate and configure the Slim application and it pass to SlimTest client.
 Then you run the client's `request` method and get the response object.
 
 The response object has implements `\Psr\Http\Message\ResponseInterface`, and also it has `getRawBody` and `getParsedBody` methods as an extention.

@@ -1,9 +1,18 @@
 {
   "name": "slimtestclient/slimtestclient",
+  "type": "library",
+  "description": "Test client for Slim application.",
+  "keywords": ["slim","test"],
+  "homepage": "https://github.com/ushiboy/slim-test-client",
+  "license": "MIT",
   "scripts": {
+    "test": [
+      "@phpunit",
+      "@phpcs"
+    ],
+    "phpunit": "phpunit",
     "phpcs": "phpcs --standard=PSR2 src",
-    "test": "phpunit",
-    "phpunit": "phpunit"
+    "example": "phpunit example/index.php"
   },
   "autoload": {
     "psr-4": {
@@ -15,10 +24,12 @@
       "SlimTest\\Test\\": "test/"
     }
   },
-  "require": {},
+  "require": {
+    "php": ">=5.5"
+  },
   "require-dev": {
     "slim/slim": "^3.8",
-    "phpunit/phpunit": "^6.2",
+    "phpunit/phpunit": "^4.8",
     "squizlabs/php_codesniffer": "^3.0"
   }
 }

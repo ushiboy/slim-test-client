@@ -14,6 +14,11 @@ class ExtraResponse implements ResponseInterface
         $this->originalResponse = $response;
     }
 
+    /**
+     * Get content of response body
+     *
+     * @return string
+     */
     public function getRawBody()
     {
         $body = $this->getBody();
@@ -21,6 +26,11 @@ class ExtraResponse implements ResponseInterface
         return $body->getContents();
     }
 
+    /**
+     * Get parsed response body
+     *
+     * @return mixed
+     */
     public function getParsedBody()
     {
         $contentType = $this->getHeaderLine('Content-Type');

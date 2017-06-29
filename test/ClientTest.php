@@ -100,13 +100,7 @@ class ClientTest extends TestCase
         $response = $client->request('POST', '/todos', null, [
             'Content-Type' => 'multipart/form-data'
         ], [
-            'uploadfile' => [
-                'name' => 'test.txt',
-                'tmp_name' => $path,
-                'size' => strlen($content),
-                'error' => UPLOAD_ERR_OK,
-                'type' => 'text/plain'
-            ]
+            'uploadfile' => Client::generateUploadFile($path)
         ]);
         $this->assertEquals($content, $result);
     }
@@ -138,28 +132,7 @@ class ClientTest extends TestCase
         $response = $client->request('POST', '/todos', null, [
             'Content-Type' => 'multipart/form-data'
         ], [
-            'uploadfile' => [
-                'name' => [
-                    'test1.txt',
-                    'test2.txt'
-                ],
-                'tmp_name' => [
-                    $path1,
-                    $path2
-                ],
-                'size' => [
-                    strlen($content1),
-                    strlen($content2)
-                ],
-                'error' => [
-                    UPLOAD_ERR_OK,
-                    UPLOAD_ERR_OK
-                ],
-                'type' => [
-                    'text/plain',
-                    'text/plain'
-                ]
-            ]
+            'uploadfile' => Client::generateUploadFiles([$path1, $path2])
         ]);
         $this->assertEquals([$content1, $content2], $result);
     }
@@ -197,5 +170,55 @@ class ClientTest extends TestCase
         $this->assertEquals(['test', ['id' => 1234]], $result);
     }
 
+    public function testGenerateUploadFile()
+    {
+        $content = 'testtest';
+        $f = tmpfile();
+        $path = stream_get_meta_data($f)['uri'];
+        fwrite($f, $content);
+        $this->assertEquals([
+            'name' => basename($path),
+            'tmp_name' => $path,
+            'size' => strlen($content),
+            'error' => UPLOAD_ERR_OK,
+            'type' => 'text/plain'
+        ], Client::generateUploadFile($path));
+    }
 
+
+    public function testGenerateUploadFiles()
+    {
+        $content1 = 'test1';
+        $f1 = tmpfile();
+        $path1 = stream_get_meta_data($f1)['uri'];
+        fwrite($f1, $content1);
+
+        $content2 = 'test2';
+        $f2 = tmpfile();
+        $path2 = stream_get_meta_data($f2)['uri'];
+        fwrite($f2, $content2);
+
+        $this->assertEquals([
+            'name' => [
+                basename($path1),
+                basename($path2)
+            ],
+            'tmp_name' => [
+                $path1,
+                $path2
+            ],
+            'size' => [
+                strlen($content1),
+                strlen($content2)
+            ],
+            'error' => [
+                UPLOAD_ERR_OK,
+                UPLOAD_ERR_OK
+            ],
+            'type' => [
+                'text/plain',
+                'text/plain'
+            ]
+        ], Client::generateUploadFiles([$path1, $path2]));
+    }
 }

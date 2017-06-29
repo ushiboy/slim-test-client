@@ -1,5 +1,7 @@
 # Slim Test Client
 
+[![Build Status](https://travis-ci.org/ushiboy/slim-test-client.svg?branch=master)](https://travis-ci.org/ushiboy/slim-test-client)
+
 Unofficial test client for Slim Framework.
 
 ## Usage

@@ -8,7 +8,7 @@ Unofficial test client for Slim Framework.
 
 
 To get started, you first instantiate and configure the Slim application and it passing to instantiate SlimTest client.
-Next you executes a request to the target route in the client's request method and gets a response object.
+Then you run the client's `request` method and get the response object.
 
 The response object has implements `\Psr\Http\Message\ResponseInterface`, and also it has `getRawBody` and `getParsedBody` methods as an extention.
 
@@ -99,8 +99,8 @@ $response = $client->request('POST', '/test', null, [
 
 ### JSON
 
-Content-Type: `application/json;charset=utf8` As a helper method to execute the request,
-You can use `requestJson`. In this case, the request body is treated as JSON data.
+If you use the `requestJson` method, you can omit the Content-Type.
+In this case, the request body is treated as JSON data.
 
 
 ```php

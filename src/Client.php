@@ -84,6 +84,44 @@ class Client
         array $headers = [],
         array $files = []
     ) {
+        return $this->processRequest($this->createRequest($method, $url, $body, $headers, $files));
+    }
+
+    /**
+     * Execute JSON request
+     *
+     * @param string $method    HTTP Request Method
+     * @param string $url       URL
+     * @param array $body       Request Body
+     * @param array $headers    Request Header
+     *
+     * @return \SlimTest\ExtraResponse
+     */
+    public function requestJson($method, $uri, $body = null, $headers = [])
+    {
+        return $this->request($method, $uri, $body, array_merge([
+            'Content-Type' => 'application/json;charset=utf8'
+        ], $headers));
+    }
+
+    /**
+     * Create request
+     *
+     * @param string $method    HTTP Request Method
+     * @param string $url       URL
+     * @param array $body       Request Body
+     * @param array $headers    Request Header
+     * @param array $files      Upload File Data
+     *
+     * @return \Slim\Http\Request
+     */
+    public function createRequest(
+        $method,
+        $url,
+        $body = null,
+        array $headers = [],
+        array $files = []
+    ) {
         $app = $this->app;
         $uri = parse_url($url);
         $contentType = isset($headers['Content-Type']) ? $headers['Content-Type'] : 'application/x-www-form-urlencoded';
@@ -106,29 +144,25 @@ class Client
         $container['environment'] = function () use ($environment) {
             return $environment;
         };
-        $request = $this->buildRequest($environment, $serializedBody, $files);
+        return $this->buildRequest($environment, $serializedBody, $files);
+    }
+
+    /**
+     * Process Request
+     *
+     * @param \Slim\Http\Request $request    Request Instance
+     *
+     * @return \SlimTest\ExtraResponse
+     */
+    public function processRequest(\Slim\Http\Request $request)
+    {
+        $app = $this->app;
+        $container = $app->getContainer();
         $container['request'] = function () use ($request) {
             return $request;
         };
         $response = $container->get('response');
         return new ExtraResponse($app->process($request, $response));
-    }
-
-    /**
-     * Execute JSON request
-     *
-     * @param string $method    HTTP Request Method
-     * @param string $url       URL
-     * @param array $body       Request Body
-     * @param array $headers    Request Header
-     *
-     * @return \SlimTest\ExtraResponse
-     */
-    public function requestJson($method, $uri, $body = null, $headers = [])
-    {
-        return $this->request($method, $uri, $body, array_merge([
-            'Content-Type' => 'application/json;charset=utf8'
-        ], $headers));
     }
 
     private function serializeBody($contentType, $body)
@@ -157,7 +191,16 @@ class Client
         if ($rawBody !== '') {
             $body->write($rawBody);
         }
-        return new Request($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+        $request = new Request($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+        if ($method === 'POST' &&
+            in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'])
+        ) {
+            // fix \Slim\Http\Request $_POST
+            $posts = [];
+            parse_str($rawBody, $posts);
+            $request = $request->withParsedBody($posts);
+        }
+        return $request;
     }
 
     private function convertUploadFiles(array $files)

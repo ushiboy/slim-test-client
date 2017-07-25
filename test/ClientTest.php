@@ -178,7 +178,8 @@ class ClientTest extends TestCase
         fwrite($f, $content);
 
         $client = new Client(new App());
-        $request = $client->createRequest('POST', '/todos?a=1', ['b'=>2], [
+        $body = ['b' => '2'];
+        $request = $client->createRequest('POST', '/todos?a=1', $body, [
             'X-My-Custom' => 'test',
             'Content-Type' => 'multipart/form-data'
         ], [
@@ -188,7 +189,8 @@ class ClientTest extends TestCase
         $this->assertEquals('POST', $request->getMethod());
         $this->assertEquals('/todos?a=1', $request->getRequestTarget());
         $this->assertEquals(['a' => '1'], $request->getQueryParams());
-        $this->assertEquals(['b' => '2'], $request->getParsedBody());
+        $this->assertEquals($body, $request->getParsedBody());
+        $this->assertEquals(strlen(http_build_query($body)), $request->getHeaderLine('Content-Length'));
         $this->assertEquals('test', $request->getHeaderLine('X-My-Custom'));
         $this->assertEquals($content, $request->getUploadedFiles()['uploadfile']->getStream()->getContents());
     }

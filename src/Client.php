@@ -126,7 +126,7 @@ class Client
         $uri = parse_url($url);
         $contentType = isset($headers['Content-Type']) ? $headers['Content-Type'] : 'application/x-www-form-urlencoded';
         $serializedBody = $this->serializeBody($contentType, $body);
-        $contentLength = mb_strlen($serializedBody);
+        $contentLength = strlen($serializedBody);
         $serverParams = [
             'REQUEST_METHOD' => $method,
             'REQUEST_URI' => $uri['path'],
